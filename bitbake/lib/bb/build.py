@@ -320,7 +320,7 @@ def exec_func_python(func, d, runfile, cwd=None, pythonexception=False):
                 bb.warn("%s: Cannot restore cwd %s: %s" % (func, olddir, e))
 
 def shell_trap_code():
-    return '''#!/bin/sh\n
+    return '''#!/bin/bash\n
 # Emit a useful diagnostic if something fails:
 bb_exit_handler() {
     ret=$?
