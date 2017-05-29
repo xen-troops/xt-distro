@@ -25,8 +25,16 @@
 #MACHINE ?= "qemux86"
 #MACHINE ?= "qemux86-64"
 #
-# This sets the default machine to be qemux86 if no other machine is selected:
-MACHINE ??= "qemux86"
+# There are also the following hardware board target machines included for 
+# demonstration purposes:
+#
+#MACHINE ?= "beaglebone"
+#MACHINE ?= "genericx86"
+#MACHINE ?= "genericx86-64"
+#MACHINE ?= "mpc8315e-rdb"
+#MACHINE ?= "edgerouter"
+#
+MACHINE ?= "salvator-x"
 
 #
 # Where to place downloads
@@ -39,7 +47,7 @@ MACHINE ??= "qemux86"
 #
 # The default is a downloads directory under TOPDIR which is the build directory.
 #
-#DL_DIR ?= "${TOPDIR}/downloads"
+DL_DIR ?= "${HOME}/xt-nfs/downloads"
 
 #
 # Where to place shared-state files
@@ -55,7 +63,7 @@ MACHINE ??= "qemux86"
 #
 # The default is a sstate-cache directory under TOPDIR.
 #
-#SSTATE_DIR ?= "${TOPDIR}/sstate-cache"
+SSTATE_DIR ?= "${TOPDIR}/sstate-cache"
 
 #
 # Where to place the build output
@@ -69,6 +77,20 @@ MACHINE ??= "qemux86"
 #
 #TMPDIR = "${TOPDIR}/tmp"
 
+#
+# Default policy config
+#
+# The distribution setting controls which policy settings are used as defaults.
+# The default value is fine for general Yocto project use, at least initially.
+# Ultimately when creating custom policy, people will likely end up subclassing 
+# these defaults.
+#
+DISTRO ?= "xt-distro"
+# As an example of a subclass there is a "bleeding" edge policy configuration
+# where many versions are set to the absolute latest code from the upstream 
+# source control systems. This is just mentioned here as an example, its not
+# useful to most new users.
+# DISTRO ?= "poky-bleeding"
 
 #
 # Package Management configuration
@@ -81,8 +103,8 @@ MACHINE ??= "qemux86"
 #  - 'package_ipk' for ipk files are used by opkg (a debian style embedded package manager)
 #  - 'package_rpm' for rpm style packages
 # E.g.: PACKAGE_CLASSES ?= "package_rpm package_deb package_ipk"
-# We default to ipk:
-PACKAGE_CLASSES ?= "package_ipk"
+# We default to rpm:
+PACKAGE_CLASSES ?= "package_rpm"
 
 #
 # SDK target architecture
@@ -130,7 +152,6 @@ EXTRA_IMAGE_FEATURES ?= "debug-tweaks"
 # NOTE: if listing mklibs & prelink both, then make sure mklibs is before prelink
 # NOTE: mklibs also needs to be explicitly enabled for a given image, see local.conf.extended
 USER_CLASSES ?= "buildstats image-mklibs image-prelink"
-
 
 #
 # Runtime testing of images
@@ -193,9 +214,8 @@ BB_DISKMON_DIRS = "\
 # NOTE: if the mirror uses the same structure as SSTATE_DIR, you need to add PATH
 # at the end as shown in the examples below. This will be substituted with the
 # correct path within the directory structure.
-#SSTATE_MIRRORS ?= "\
-#file://.* http://someserver.tld/share/sstate/PATH;downloadfilename=PATH \n \
-#file://.* file:///some/local/dir/sstate/PATH"
+SSTATE_MIRRORS ?= "\
+file://.* file://${HOME}/xt-nfs/sstate-cache/PATH"
 
 
 #
@@ -213,3 +233,7 @@ PACKAGECONFIG_append_pn-nativesdk-qemu = " sdl"
 # track the version of this file when it was generated. This can safely be ignored if
 # this doesn't mean anything to you.
 CONF_VERSION = "1"
+
+DEPLOY_DIR = "${TMPDIR}/deploy"
+IMAGE_ROOTFS = "${TMPDIR}/rootfs"
+XT_SHARED_ROOTFS_DIR = "${IMAGE_ROOTFS}/shared_rootfs"
