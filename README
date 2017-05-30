@@ -49,7 +49,7 @@ used as local.conf file.
 
 XT_BB_IMAGE_TARGET – inner build's bitbake target to be invoked for the build.
 
-XT_QUIRCK_BB_ADD_LAYER – list of bitbake layers that need to be added to the
+XT_QUIRK_BB_ADD_LAYER – list of bitbake layers that need to be added to the
 inner build. This is useful if using layers which are not in the inner build's
 bblayers.conf file.
 

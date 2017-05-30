@@ -66,7 +66,7 @@ build_yocto_add_bblayer() {
 python do_configure() {
     bb.build.exec_func("build_yocto_configure", d)
     # add layers to bblayers.conf
-    layers = (d.getVar("XT_QUIRCK_BB_ADD_LAYER") or "").split()
+    layers = (d.getVar("XT_QUIRK_BB_ADD_LAYER") or "").split()
     if layers:
         for layer in layers:
             bb.debug(1, "Adding to bblayers.conf: " + str(layer.split()))
