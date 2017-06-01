@@ -51,6 +51,10 @@ build_yocto_configure() {
         fi
         if [ -n ${XT_SSTATE_CACHE_MIRROR_DIR} ] ; then
                 base_update_conf_value ${local_conf} XT_SSTATE_CACHE_MIRROR_DIR ${XT_SSTATE_CACHE_MIRROR_DIR}
+                if [ ${XT_ALLOW_SSTATE_CACHE_MIRROR_USE} == "1" ] ; then
+                        # force to what we want
+                        echo "SSTATE_MIRRORS = \"file://.* file://${XT_SSTATE_CACHE_MIRROR_DIR}/PATH\"" >> ${local_conf}
+                fi
         fi
         base_update_conf_value ${local_conf} INHERIT buildhistory "+"
         base_update_conf_value ${local_conf} BUILDHISTORY_COMMIT 1
