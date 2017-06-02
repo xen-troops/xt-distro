@@ -28,6 +28,17 @@ build_yocto_configure() {
     fi
     # update local.conf so inner build uses our folders
     if [ -f ${local_conf} ] ; then
+        if [ -n ${MACHINE} ] ; then
+                # FIXME: inner build cannot use the same machine name because
+                # of machine configuration file name clashes with the original
+                # one from BSP, e.g. if original BSP provides my-machine.conf
+                # and we want to modify it then there will also be our
+                # my-machine.conf. But, we cannot guarantee that our conf file
+                # will be picked by bitbake first.
+                # Add xen-troops suffix, so inner build uses
+                # our machine without races
+                base_update_conf_value ${local_conf} MACHINE "${MACHINE}-xt"
+        fi
         if [ -n ${DL_DIR} ] ; then
                 base_update_conf_value ${local_conf} DL_DIR ${DL_DIR}
         fi
