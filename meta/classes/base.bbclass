@@ -84,7 +84,7 @@ base_update_conf_value() {
         echo "${key}${key_prefix}=" >> "${config_file}"
     fi
     # substitute
-    sed -i "s%\(${key}.*= *\).*%\1\"${value}\"%" "${config_file}"
+    sed -i "s%\(^${key} *[?+:]*= *\).*%\1\"${value}\"%" "${config_file}"
 }
 
 addtask fetch
