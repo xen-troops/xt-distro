@@ -1,0 +1,129 @@
+XT-distro
+=========
+
+XT-distro (XT stands for Xen-Troops) is a set of tools designed to automate
+build process of various components of a hypervisor based system, e.g. allows to
+build multiple images which are used to run guest OSes. The distribution allows
+inter image dependencies, e.g. you can use artifacts coming from one image in
+the other one. In particular, while working with Xen hypervisor [1], this allows
+easy deployment of Linux kernel images coming from image builds other then Dom0.
+
+XT-distro local.conf extensions
+===============================
+
+In order to configure inter-image relations and provide means for other control
+there are number of options one can use in local.conf file for better tuning.
+
+XT_SHARED_ROOTFS_DIR – shared directory path used by all the builds to deliver
+artifacts. This is in particular, used to deploy Linux Kernel images from
+DomU(s) to the known location, so Dom0 can pick those while building its root
+file system.
+
+XT_SSTATE_CACHE_MIRROR_DIR – directory path used to deliver SSTATE cache of
+builds run by XT-distro. If set, this folder will be used to deliver “partial”
+state caches of all the builds, so those caches can be re-used. For example, if
+two domains/images are built with XT-distro, e.g. Dom0 and DomU, then after the
+successful build state caches of Dom0 and DomU will be deployed to the mirror
+directory.
+
+FIXME: we cannot use XT_SSTATE_CACHE_MIRROR_DIR for all the builds directly
+because of the fact that some older versions of Poky/OE cannot properly handle
+buildhistroy and sstate_cache: history is built during do_fetch, but when
+sstate_cache is in use fetch is not called.
+
+XT_POPULATE_SDK – if set then every domain build will be requested to populate
+SDK, e.g. if there are two images are built (Dom0 and DomU), then both will be
+asked to populate corresponding SDKs.
+
+XT-distro and bitbake related extensions
+========================================
+
+In order to better control inner Yocto based builds there are number of
+extensions defined in recipe files.
+
+XT_BB_LAYERS_FILE – a file within inner build source directory (${S})  to be
+used as bblayers.conf file.
+
+XT_BB_LOCAL_CONF_FILE - a file within inner build source directory (${S})  to be
+used as local.conf file.
+
+XT_BB_IMAGE_TARGET – inner build's bitbake target to be invoked for the build.
+
+XT_QUIRK_BB_ADD_LAYER – list of bitbake layers that need to be added to the
+inner build. This is useful if using layers which are not in the inner build's
+bblayers.conf file.
+
+XT-distro based Xen-troops build system
+=======================================
+
+The aim of the Xen-troops build system is to automate build of different system
+components, such as domain images, into a single delivery. In order to achive
+this Xen-troops uses the following additional components:
+
+1. meta-xt-products - collection of manifests with additional components
+(meta layers) which in conjunction with xt-distro allow to build a product.
+This normally includes xt-distro, meta-xt-images and one of the
+meta-xt-prod-XXX:
+
+meta-xt-products/
+├── prod-devel.xml
+├── prod-XXX.xml
+
+2. meta-xt-images - collection of recipes which allow to build various images
+for different domains regardless of the product being built:
+
+meta-xt-images/
+├── classes
+├── conf
+├── recipes-dom0
+│   └── dom0-image-weston
+│       └── dom0-image-weston.bb
+└── recipes-domu
+    └── domu-image-weston
+        └── domu-image-weston.bb
+
+3. meta-xt-prod-devel - collection of recipes/bbappend files which are used to
+tailor generic image recipes to the needs of the product being built
+
+meta-xt-prod-devel/
+├── conf
+├── recipes-dom0
+│   └── dom0-image-weston
+│       ├── dom0-image-weston.bbappend
+│       └── files
+│           └── meta-xt-extra
+│               ├── conf
+│               │   └── layer.conf
+│               └── recipes-domu
+│                   └── kernel
+│                       ├── core-image-weston.bbappend
+│                       └── dom0-image-weston-domu-copy-kernel.bb
+├── recipes-domu
+│   └── domu-image-weston
+│       ├── domu-image-weston.bbappend
+│       └── files
+│           └── meta-xt-extra
+│               ├── conf
+│               │   └── layer.conf
+│               └── recipes-kernel
+│                   └── linux
+│                       ├── linux-kernel.inc
+│                       ├── linux-renesas_%.bbappend
+│                       └── linux-yocto_%.bbappend
+└── recipes-xt-image
+    └── xt-image
+        └── xt-image.bb
+
+Normally a product will have additional meta layer(s) deployed into "inner"
+(image) build system: these become a part of that build system
+("files/meta-xt-extra" in the example above, used to extend Yocto based build
+system for dom0 and domu images).
+Additional layers/recipes may exist to populate configuration files or run
+configuration scripts or tailor the image in any other way.
+
+NOTE: There is a requirement for each product to have a default target
+"xt-image" so it can be invoked by the build scripts.
+
+4. build-scripts - set of scripts which automate product build
+
+[1] https://www.xenproject.org/
