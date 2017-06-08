@@ -89,6 +89,10 @@ python do_configure() {
             bb.build.exec_func("build_yocto_add_bblayer", d)
 }
 
+# force running inner build's bitbake to check if anythyng has changed:
+# this is needed as upper Yocto only sees changes in its own recipes,
+# but inner Yocto is not checked
+do_compile[nostamp] = "1"
 do_compile() {
     cd ${S}
     source poky/oe-init-build-env
