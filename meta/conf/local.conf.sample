@@ -235,8 +235,7 @@ PACKAGECONFIG_append_pn-nativesdk-qemu = " sdl"
 CONF_VERSION = "1"
 
 DEPLOY_DIR = "${TMPDIR}/deploy"
-IMAGE_ROOTFS = "${TMPDIR}/rootfs"
-XT_SHARED_ROOTFS_DIR = "${IMAGE_ROOTFS}/shared_rootfs"
+XT_SHARED_ROOTFS_DIR = "${TMPDIR}/shared_rootfs"
 BUILDHISTORY_DIR = "${TMPDIR}/buildhistory"
 
 #
