@@ -95,7 +95,16 @@ do_compile() {
 do_populate_sdk() {
     if [ -n ${XT_POPULATE_SDK} ] ; then
         cd ${S}
-        source poky/oe-init-build-env && bitbake ${XT_BB_IMAGE_TARGET} -c populate_sdk
+        # do not populate SDK for initramfs
+        for target in ${XT_BB_IMAGE_TARGET}
+        do
+            if [[ $target =~ initramfs ]]; then
+                echo "Skipping populate SDK task for $target"
+            else
+                echo "Populating SDK for $target"
+                source poky/oe-init-build-env && bitbake $target -c populate_sdk
+            fi
+        done
     fi
 }
 
