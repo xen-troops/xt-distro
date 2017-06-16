@@ -15,15 +15,39 @@ python do_unpack_append() {
     bb.build.exec_func("build_yocto_repo_sync", d)
 }
 
+################################################################################
+# FIXME: If the variable expansion syntax is used on a variable that
+# does not exist, the string is kept as is.
+# E.g. trying to expand non-existing XT_POPULATE_SDK will result
+# in ${XT_POPULATE_SDK} string, thus making [ -n ${XT_POPULATE_SDK}] check
+# always be true.
+#
+# Workaround this by explicitly expanding those variables we depend on
+# either to the value or empty string.
+#
+# N.B. If the variable is set, then it can be used as is, so
+# only use expanded variables for tests, e.g. [ -n ]
+#
+# N.B. This is not needed for those variables that are handled by bitbake
+# itself, e.g. DL_DIR etc.
+################################################################################
+
+EXPANDED_XT_BB_LAYERS_FILE = "${@d.getVar('XT_BB_LAYERS_FILE') or '""'}"
+EXPANDED_XT_BB_LOCAL_CONF_FILE = "${@d.getVar('XT_BB_LOCAL_CONF_FILE') or '""'}"
+EXPANDED_XT_SHARED_ROOTFS_DIR = "${@d.getVar('XT_SHARED_ROOTFS_DIR') or '""'}"
+EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR = "${@d.getVar('XT_SSTATE_CACHE_MIRROR_DIR') or '""'}"
+EXPANDED_XT_ALLOW_SSTATE_CACHE_MIRROR_USE = "${@d.getVar('XT_ALLOW_SSTATE_CACHE_MIRROR_USE') or '""'}"
+EXPANDED_XT_POPULATE_SDK = "${@d.getVar('XT_POPULATE_SDK') or '""'}"
+
 build_yocto_configure() {
     local local_conf="${S}/build/conf/local.conf"
 
     cd ${S}
     source poky/oe-init-build-env
-    if [ -f "${S}/${XT_BB_LAYERS_FILE}" ] ; then
+    if [ -f "${S}/${EXPANDED_XT_BB_LAYERS_FILE}" ] ; then
         cp "${S}/${XT_BB_LAYERS_FILE}" "${S}/build/conf/bblayers.conf"
     fi
-    if [ -f "${S}/${XT_BB_LOCAL_CONF_FILE}" ] ; then
+    if [ -f "${S}/${EXPANDED_XT_BB_LOCAL_CONF_FILE}" ] ; then
         cp "${S}/${XT_BB_LOCAL_CONF_FILE}" "${local_conf}"
     fi
     # update local.conf so inner build uses our folders
@@ -54,12 +78,12 @@ build_yocto_configure() {
         if [ -n ${BUILDHISTORY_DIR} ] ; then
                 base_update_conf_value ${local_conf} BUILDHISTORY_DIR ${BUILDHISTORY_DIR}/${PN}
         fi
-        if [ -n ${XT_SHARED_ROOTFS_DIR} ] ; then
+        if [ -n ${EXPANDED_XT_SHARED_ROOTFS_DIR} ] ; then
                 base_update_conf_value ${local_conf} XT_SHARED_ROOTFS_DIR ${XT_SHARED_ROOTFS_DIR}
         fi
-        if [ -n ${XT_SSTATE_CACHE_MIRROR_DIR} ] ; then
+        if [ -n ${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR} ] ; then
                 base_update_conf_value ${local_conf} XT_SSTATE_CACHE_MIRROR_DIR ${XT_SSTATE_CACHE_MIRROR_DIR}
-                if [ ${XT_ALLOW_SSTATE_CACHE_MIRROR_USE} == "1" ] ; then
+                if [ ${EXPANDED_XT_ALLOW_SSTATE_CACHE_MIRROR_USE} == "1" ] ; then
                         # force to what we want
                         echo "SSTATE_MIRRORS = \"file://.* file://${XT_SSTATE_CACHE_MIRROR_DIR}/PATH\"" >> ${local_conf}
                 fi
@@ -93,7 +117,7 @@ do_compile() {
 }
 
 do_populate_sdk() {
-    if [ -n ${XT_POPULATE_SDK} ] ; then
+    if [ -n ${EXPANDED_XT_POPULATE_SDK} ] ; then
         cd ${S}
         # do not populate SDK for initramfs
         for target in ${XT_BB_IMAGE_TARGET}
@@ -116,7 +140,7 @@ do_collect_build_history() {
 }
 
 do_populate_sstate_cache() {
-    if [ -n ${XT_SSTATE_CACHE_MIRROR_DIR} ] ; then
+    if [ -n ${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR} ] ; then
         install -d ${XT_SSTATE_CACHE_MIRROR_DIR}
         cp -rf ${SSTATE_DIR}/${PN}/* ${XT_SSTATE_CACHE_MIRROR_DIR} || true
     fi
