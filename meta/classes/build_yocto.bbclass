@@ -1,20 +1,3 @@
-# N.B. this is guaranteed by the layer priority (see layer.conf
-# BBFILE_PRIORITY_xt-core = "5") that this append will
-# run after base_do_unpack and BEFORE any other unpacks
-# such as proprietary code unpack in other layers etc.
-# so, the repo will get updated properly before other
-# related recipes
-build_yocto_repo_sync() {
-    cd ${S}
-    # repo:// fetcher doesn't do repo sync for downloads
-    # from cache, thus force sync manually
-    repo sync -j${BB_NUMBER_THREADS}
-}
-
-python do_unpack_append() {
-    bb.build.exec_func("build_yocto_repo_sync", d)
-}
-
 ################################################################################
 # FIXME: If the variable expansion syntax is used on a variable that
 # does not exist, the string is kept as is.
