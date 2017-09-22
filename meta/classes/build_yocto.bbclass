@@ -15,12 +15,12 @@
 # itself, e.g. DL_DIR etc.
 ################################################################################
 
-EXPANDED_XT_BB_LAYERS_FILE = "${@d.getVar('XT_BB_LAYERS_FILE') or '""'}"
-EXPANDED_XT_BB_LOCAL_CONF_FILE = "${@d.getVar('XT_BB_LOCAL_CONF_FILE') or '""'}"
-EXPANDED_XT_SHARED_ROOTFS_DIR = "${@d.getVar('XT_SHARED_ROOTFS_DIR') or '""'}"
-EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR = "${@d.getVar('XT_SSTATE_CACHE_MIRROR_DIR') or '""'}"
-EXPANDED_XT_ALLOW_SSTATE_CACHE_MIRROR_USE = "${@d.getVar('XT_ALLOW_SSTATE_CACHE_MIRROR_USE') or '""'}"
-EXPANDED_XT_POPULATE_SDK = "${@d.getVar('XT_POPULATE_SDK') or '""'}"
+EXPANDED_XT_BB_LAYERS_FILE = "${@d.getVar('XT_BB_LAYERS_FILE') or ''}"
+EXPANDED_XT_BB_LOCAL_CONF_FILE = "${@d.getVar('XT_BB_LOCAL_CONF_FILE') or ''}"
+EXPANDED_XT_SHARED_ROOTFS_DIR = "${@d.getVar('XT_SHARED_ROOTFS_DIR') or ''}"
+EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR = "${@d.getVar('XT_SSTATE_CACHE_MIRROR_DIR') or ''}"
+EXPANDED_XT_ALLOW_SSTATE_CACHE_MIRROR_USE = "${@d.getVar('XT_ALLOW_SSTATE_CACHE_MIRROR_USE') or ''}"
+EXPANDED_XT_POPULATE_SDK = "${@d.getVar('XT_POPULATE_SDK') or ''}"
 
 build_yocto_configure() {
     local local_conf="${S}/build/conf/local.conf"
