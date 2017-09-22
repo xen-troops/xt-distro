@@ -22,11 +22,14 @@ EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR = "${@d.getVar('XT_SSTATE_CACHE_MIRROR_DIR')
 EXPANDED_XT_ALLOW_SSTATE_CACHE_MIRROR_USE = "${@d.getVar('XT_ALLOW_SSTATE_CACHE_MIRROR_USE') or ''}"
 EXPANDED_XT_POPULATE_SDK = "${@d.getVar('XT_POPULATE_SDK') or ''}"
 
+REAL_XT_BB_CONFIG_CMD = "${@d.getVar('XT_BB_CONFIG_CMD') or 'source poky/oe-init-build-env'}"
+REAL_XT_BB_RUN_CMD = "${@d.getVar('XT_BB_RUN_CMD') or 'source poky/oe-init-build-env'}"
+
 build_yocto_configure() {
     local local_conf="${S}/build/conf/local.conf"
 
     cd ${S}
-    source poky/oe-init-build-env
+    ${REAL_XT_BB_CONFIG_CMD}
     if [ -f "${S}/${EXPANDED_XT_BB_LAYERS_FILE}" ] ; then
         cp "${S}/${XT_BB_LAYERS_FILE}" "${S}/build/conf/bblayers.conf"
     fi
@@ -79,7 +82,7 @@ build_yocto_configure() {
 build_yocto_add_bblayer() {
     cd ${S}
 
-    source poky/oe-init-build-env && bitbake-layers add-layer "${S}/${XT_BBLAYER}"
+    ${REAL_XT_BB_RUN_CMD} && bitbake-layers add-layer "${S}/${XT_BBLAYER}"
 }
 
 python do_configure() {
@@ -95,7 +98,7 @@ python do_configure() {
 
 do_compile() {
     cd ${S}
-    source poky/oe-init-build-env
+    ${REAL_XT_BB_RUN_CMD}
     bitbake "${XT_BB_IMAGE_TARGET}"
 }
 
@@ -109,7 +112,7 @@ do_populate_sdk() {
                 echo "Skipping populate SDK task for $target"
             else
                 echo "Populating SDK for $target"
-                source poky/oe-init-build-env && bitbake $target -c populate_sdk
+                ${REAL_XT_BB_RUN_CMD} && bitbake $target -c populate_sdk
             fi
         done
     fi
@@ -117,7 +120,7 @@ do_populate_sdk() {
 
 do_collect_build_history() {
     cd ${S}
-    source poky/oe-init-build-env
+    ${REAL_XT_BB_RUN_CMD}
     HISTORY_DIR="${BUILDHISTORY_DIR}/${PN}"
     buildhistory-collect-srcrevs -a -p "${HISTORY_DIR}" > "${HISTORY_DIR}/build-versions.inc"
 }

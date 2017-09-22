@@ -58,6 +58,13 @@ XT_QUIRK_BB_ADD_LAYER – list of bitbake layers that need to be added to the
 inner build. This is useful if using layers which are not in the inner build's
 bblayers.conf file.
 
+XT_BB_CONFIG_CMD/XT_BB_RUN_CMD - most of the time the Yocto init script is
+poky/oe-init-build-env, but there are cases (AGL or any other distro other
+than poky) when this is not true. Allow recipes override defaults if needed.
+These variables should set a command to be used while configuring distro
+and setting environment after its configuration done, e.g. resuming
+build with bitbake on another shell.
+
 XT-distro based Xen-troops build system
 =======================================
 
