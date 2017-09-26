@@ -34,8 +34,8 @@ build_yocto_configure() {
         cp "${S}/${XT_BB_LOCAL_CONF_FILE}" "${local_conf}"
     fi
     # update local.conf so inner build uses our folders
-    if [ -f ${local_conf} ] ; then
-        if [ -n ${MACHINE} ] ; then
+    if [ -f "${local_conf}" ] ; then
+        if [ -n "${MACHINE}" ] ; then
                 # FIXME: inner build cannot use the same machine name because
                 # of machine configuration file name clashes with the original
                 # one from BSP, e.g. if original BSP provides my-machine.conf
@@ -44,42 +44,42 @@ build_yocto_configure() {
                 # will be picked by bitbake first.
                 # Add xen-troops suffix, so inner build uses
                 # our machine without races
-                base_update_conf_value ${local_conf} MACHINE "${MACHINE}-xt"
+                base_update_conf_value "${local_conf}" MACHINE "${MACHINE}-xt"
         fi
-        if [ -n ${DL_DIR} ] ; then
-                base_update_conf_value ${local_conf} DL_DIR ${DL_DIR}
+        if [ -n "${DL_DIR}" ] ; then
+                base_update_conf_value "${local_conf}" DL_DIR "${DL_DIR}"
         fi
-        if [ -n ${SSTATE_DIR} ] ; then
-                base_update_conf_value ${local_conf} SSTATE_DIR ${SSTATE_DIR}/${PN}
+        if [ -n "${SSTATE_DIR}" ] ; then
+                base_update_conf_value "${local_conf}" SSTATE_DIR "${SSTATE_DIR}/${PN}"
         fi
-        if [ -n ${DEPLOY_DIR} ] ; then
-                base_update_conf_value ${local_conf} DEPLOY_DIR ${DEPLOY_DIR}/${PN}
+        if [ -n "${DEPLOY_DIR}" ] ; then
+                base_update_conf_value "${local_conf}" DEPLOY_DIR "${DEPLOY_DIR}/${PN}"
         fi
-        if [ -n ${LOG_DIR} ] ; then
-                base_update_conf_value ${local_conf} LOG_DIR ${LOG_DIR}/${PN}
+        if [ -n "${LOG_DIR}" ] ; then
+                base_update_conf_value "${local_conf}" LOG_DIR "${LOG_DIR}/${PN}"
         fi
-        if [ -n ${BUILDHISTORY_DIR} ] ; then
-                base_update_conf_value ${local_conf} BUILDHISTORY_DIR ${BUILDHISTORY_DIR}/${PN}
+        if [ -n "${BUILDHISTORY_DIR}" ] ; then
+                base_update_conf_value "${local_conf}" BUILDHISTORY_DIR "${BUILDHISTORY_DIR}/${PN}"
         fi
-        if [ -n ${EXPANDED_XT_SHARED_ROOTFS_DIR} ] ; then
-                base_update_conf_value ${local_conf} XT_SHARED_ROOTFS_DIR ${XT_SHARED_ROOTFS_DIR}
+        if [ -n "${EXPANDED_XT_SHARED_ROOTFS_DIR}" ] ; then
+                base_update_conf_value "${local_conf}" XT_SHARED_ROOTFS_DIR "${XT_SHARED_ROOTFS_DIR}"
         fi
-        if [ -n ${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR} ] ; then
-                base_update_conf_value ${local_conf} XT_SSTATE_CACHE_MIRROR_DIR ${XT_SSTATE_CACHE_MIRROR_DIR}
-                if [ ${EXPANDED_XT_ALLOW_SSTATE_CACHE_MIRROR_USE} == "1" ] ; then
+        if [ -n "${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR}" ] ; then
+                base_update_conf_value "${local_conf}" XT_SSTATE_CACHE_MIRROR_DIR "${XT_SSTATE_CACHE_MIRROR_DIR}"
+                if [ "${EXPANDED_XT_ALLOW_SSTATE_CACHE_MIRROR_USE}" == "1" ] ; then
                         # force to what we want
-                        echo "SSTATE_MIRRORS = \"file://.* file://${XT_SSTATE_CACHE_MIRROR_DIR}/PATH\"" >> ${local_conf}
+                        echo "SSTATE_MIRRORS = \"file://.* file://${XT_SSTATE_CACHE_MIRROR_DIR}/PATH\"" >> "${local_conf}"
                 fi
         fi
-        base_update_conf_value ${local_conf} INHERIT buildhistory "+"
-        base_update_conf_value ${local_conf} BUILDHISTORY_COMMIT 1
+        base_update_conf_value "${local_conf}" INHERIT buildhistory "+"
+        base_update_conf_value "${local_conf}" BUILDHISTORY_COMMIT 1
     fi
 }
 
 build_yocto_add_bblayer() {
     cd ${S}
 
-    source poky/oe-init-build-env && bitbake-layers add-layer ${S}/${XT_BBLAYER}
+    source poky/oe-init-build-env && bitbake-layers add-layer "${S}/${XT_BBLAYER}"
 }
 
 python do_configure() {
@@ -96,14 +96,14 @@ python do_configure() {
 do_compile() {
     cd ${S}
     source poky/oe-init-build-env
-    bitbake ${XT_BB_IMAGE_TARGET}
+    bitbake "${XT_BB_IMAGE_TARGET}"
 }
 
 do_populate_sdk() {
-    if [ -n ${EXPANDED_XT_POPULATE_SDK} ] ; then
+    if [ -n "${EXPANDED_XT_POPULATE_SDK}" ] ; then
         cd ${S}
         # do not populate SDK for initramfs
-        for target in ${XT_BB_IMAGE_TARGET}
+        for target in "${XT_BB_IMAGE_TARGET}"
         do
             if [[ $target =~ initramfs ]]; then
                 echo "Skipping populate SDK task for $target"
@@ -118,14 +118,14 @@ do_populate_sdk() {
 do_collect_build_history() {
     cd ${S}
     source poky/oe-init-build-env
-    HISTORY_DIR=${BUILDHISTORY_DIR}/${PN}
-    buildhistory-collect-srcrevs -a -p ${HISTORY_DIR} > ${HISTORY_DIR}/build-versions.inc
+    HISTORY_DIR="${BUILDHISTORY_DIR}/${PN}"
+    buildhistory-collect-srcrevs -a -p "${HISTORY_DIR}" > "${HISTORY_DIR}/build-versions.inc"
 }
 
 do_populate_sstate_cache() {
-    if [ -n ${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR} ] ; then
-        install -d ${XT_SSTATE_CACHE_MIRROR_DIR}
-        cp -rf ${SSTATE_DIR}/${PN}/* ${XT_SSTATE_CACHE_MIRROR_DIR} || true
+    if [ -n "${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR}" ] ; then
+        install -d "${XT_SSTATE_CACHE_MIRROR_DIR}"
+        cp -rf "${SSTATE_DIR}/${PN}/*" "${XT_SSTATE_CACHE_MIRROR_DIR}" || true
     fi
 }
 

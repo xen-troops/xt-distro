@@ -79,7 +79,7 @@ base_update_conf_value() {
     local key_prefix=$4
     local exists=`grep "^[^\#]*${key}.*=" "${config_file}"`
 
-    if [ -z ${exists} ] ; then
+    if [ -z "${exists}" ] ; then
         # make placeholder
         echo "${key}${key_prefix}=" >> "${config_file}"
     fi
