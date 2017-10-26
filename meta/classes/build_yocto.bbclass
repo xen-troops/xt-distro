@@ -128,7 +128,7 @@ do_collect_build_history() {
 do_populate_sstate_cache() {
     if [ -n "${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR}" ] ; then
         install -d "${XT_SSTATE_CACHE_MIRROR_DIR}"
-        cp -rf "${SSTATE_DIR}/${PN}/*" "${XT_SSTATE_CACHE_MIRROR_DIR}" || true
+        cp -a "${SSTATE_DIR}/${PN}/." "${XT_SSTATE_CACHE_MIRROR_DIR}/" || true
     fi
 }
 
