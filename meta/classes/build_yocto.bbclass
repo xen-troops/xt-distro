@@ -25,6 +25,8 @@ EXPANDED_XT_POPULATE_SDK = "${@d.getVar('XT_POPULATE_SDK') or ''}"
 REAL_XT_BB_CONFIG_CMD = "${@d.getVar('XT_BB_CONFIG_CMD') or 'source poky/oe-init-build-env'}"
 REAL_XT_BB_RUN_CMD = "${@d.getVar('XT_BB_RUN_CMD') or 'source poky/oe-init-build-env'}"
 
+XT_DISABLE_SSTATE_CACHE_POPULATE ?= "0"
+
 build_yocto_configure() {
     local local_conf="${S}/build/conf/local.conf"
 
@@ -126,7 +128,7 @@ do_collect_build_history() {
 }
 
 do_populate_sstate_cache() {
-    if [ -n "${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR}" ] ; then
+    if [ -n "${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR}" ] && [ "${XT_DISABLE_SSTATE_CACHE_POPULATE}" == "0" ]; then
         install -d "${XT_SSTATE_CACHE_MIRROR_DIR}"
         cp -a "${SSTATE_DIR}/${PN}/." "${XT_SSTATE_CACHE_MIRROR_DIR}/" || true
     fi

@@ -237,7 +237,7 @@ CONF_VERSION = "1"
 DEPLOY_DIR = "${TMPDIR}/deploy"
 XT_SHARED_ROOTFS_DIR = "${TMPDIR}/shared_rootfs"
 BUILDHISTORY_DIR = "${TMPDIR}/buildhistory"
-
+XT_DISABLE_SSTATE_CACHE_POPULATE = "0"
 #
 # Allow inner builds to use SSTATE_CACHE_MIRROR
 # this must not be used for the builds which need build history
