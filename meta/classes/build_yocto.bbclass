@@ -21,6 +21,7 @@ EXPANDED_XT_SHARED_ROOTFS_DIR = "${@d.getVar('XT_SHARED_ROOTFS_DIR') or ''}"
 EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR = "${@d.getVar('XT_SSTATE_CACHE_MIRROR_DIR') or ''}"
 EXPANDED_XT_ALLOW_SSTATE_CACHE_MIRROR_USE = "${@d.getVar('XT_ALLOW_SSTATE_CACHE_MIRROR_USE') or ''}"
 EXPANDED_XT_POPULATE_SDK = "${@d.getVar('XT_POPULATE_SDK') or ''}"
+EXPANDED_XT_POPULATE_SSTATE_CACHE = "${@d.getVar('XT_POPULATE_SSTATE_CACHE') or ''}"
 
 REAL_XT_BB_CONFIG_CMD = "${@d.getVar('XT_BB_CONFIG_CMD') or 'source poky/oe-init-build-env'}"
 REAL_XT_BB_RUN_CMD = "${@d.getVar('XT_BB_RUN_CMD') or 'source poky/oe-init-build-env'}"
@@ -126,9 +127,11 @@ do_collect_build_history() {
 }
 
 do_populate_sstate_cache() {
-    if [ -n "${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR}" ] ; then
-        install -d "${XT_SSTATE_CACHE_MIRROR_DIR}"
-        cp -a "${SSTATE_DIR}/${PN}/." "${XT_SSTATE_CACHE_MIRROR_DIR}/" || true
+    if [ -n "${EXPANDED_XT_POPULATE_SSTATE_CACHE}" ] ; then
+        if [ -n "${EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR}" ] ; then
+            install -d "${XT_SSTATE_CACHE_MIRROR_DIR}"
+            cp -a "${SSTATE_DIR}/${PN}/." "${XT_SSTATE_CACHE_MIRROR_DIR}/" || true
+        fi
     fi
 }
 
