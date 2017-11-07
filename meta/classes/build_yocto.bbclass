@@ -65,6 +65,12 @@ build_yocto_configure() {
         if [ -n "${BUILDHISTORY_DIR}" ] ; then
                 base_update_conf_value "${local_conf}" BUILDHISTORY_DIR "${BUILDHISTORY_DIR}/${PN}"
         fi
+        if [ -n "${EXPANDED_XT_POPULATE_SDK}" ] ; then
+                base_update_conf_value "${local_conf}" XT_POPULATE_SDK "${XT_POPULATE_SDK}"
+        fi
+        if [ -n "${EXPANDED_XT_POPULATE_SSTATE_CACHE}" ] ; then
+                base_update_conf_value "${local_conf}" XT_POPULATE_SSTATE_CACHE "${XT_POPULATE_SSTATE_CACHE}"
+        fi
         if [ -n "${EXPANDED_XT_SHARED_ROOTFS_DIR}" ] ; then
                 base_update_conf_value "${local_conf}" XT_SHARED_ROOTFS_DIR "${XT_SHARED_ROOTFS_DIR}"
         fi
