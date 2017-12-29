@@ -82,7 +82,7 @@ class Repo(FetchMethod):
             tar_flags = "--exclude='.repo' --exclude='.git'"
 
         # Create a cache
-        runfetchcmd("tar %s -czf %s %s" % (tar_flags, ud.localpath, os.path.join(".", "*") ), d, workdir=ud.codir)
+        runfetchcmd("tar %s -cf - %s | pigz > %s" % (tar_flags, os.path.join(".", "*"), ud.localpath), d, workdir=ud.codir)
 
     def unpack(self, ud, destdir, d):
         FetchMethod.unpack(self, ud, destdir, d)
