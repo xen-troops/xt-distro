@@ -81,7 +81,7 @@ build_yocto_configure() {
                         echo "SSTATE_MIRRORS=\"file://.* file://${XT_SSTATE_CACHE_MIRROR_DIR}/PATH\"" >> "${local_conf}"
                 fi
         fi
-        base_update_conf_value "${local_conf}" INHERIT buildhistory "+"
+        base_add_conf_value "${local_conf}" INHERIT buildhistory
         base_update_conf_value "${local_conf}" BUILDHISTORY_COMMIT 1
     fi
 }
