@@ -76,15 +76,35 @@ base_update_conf_value() {
     local config_file=$1
     local key=$2
     local value=$3
-    local key_prefix=$4
     local exists=`grep "^[^\#]*${key}.*=" "${config_file}"`
 
     if [ -z "${exists}" ] ; then
         # make placeholder
-        echo "${key}${key_prefix}=" >> "${config_file}"
+        echo "${key} = " >> "${config_file}"
     fi
     # substitute
     sed -i "s%\(^${key} *[?+:]*= *\).*%\1\"${value}\"%" "${config_file}"
+}
+
+base_adjust_conf_value() {
+    local config_file=$1
+    local key=$2
+    local value=$3
+    local adjustment=$4
+
+    echo "${key} ${adjustment} "\"${value}\" >> "${config_file}"
+}
+
+base_set_conf_value() {
+   base_adjust_conf_value $1 $2 $3 "="
+}
+
+base_add_conf_value() {
+    base_adjust_conf_value $1 $2 $3 "+="
+}
+
+base_remove_conf_value() {
+    base_adjust_conf_value $1 $2 $3 "-="
 }
 
 addtask fetch
