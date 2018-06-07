@@ -92,11 +92,21 @@ build_yocto_add_bblayer() {
     ${REAL_XT_BB_RUN_CMD} && bitbake-layers add-layer "${S}/${XT_BBLAYER}"
 }
 
+build_yocto_set_generic_machine() {
+    local local_conf="${S}/build/conf/local.conf"
+    cd ${S}
+
+    base_update_conf_value "${local_conf}" MACHINE "generic-armv8-xt"
+}
+
+
 python do_configure() {
     bb.build.exec_func("build_yocto_configure", d)
     # add layers to bblayers.conf
     layers = (d.getVar("XT_QUIRK_BB_ADD_LAYER") or "").split()
     if layers:
+        if "meta-xt-images-generic-armv8" in layers:
+            bb.build.exec_func("build_yocto_set_generic_machine", d)
         for layer in layers:
             bb.debug(1, "Adding to bblayers.conf: " + str(layer.split()))
             d.setVar('XT_BBLAYER', str(layer))
