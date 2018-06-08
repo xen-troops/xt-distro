@@ -99,6 +99,12 @@ build_yocto_set_generic_machine() {
     base_update_conf_value "${local_conf}" MACHINE "generic-armv8-xt"
 }
 
+build_yocto_exec_bitbake() {
+    cd ${S}
+
+    ${REAL_XT_BB_RUN_CMD} && bitbake ${XT_BB_CMDLINE}
+}
+
 python do_configure() {
     bb.build.exec_func("build_yocto_configure", d)
     # add layers to bblayers.conf
