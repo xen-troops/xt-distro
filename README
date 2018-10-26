@@ -44,6 +44,9 @@ XT_POPULATE_SDK – if set then every domain build will be requested to populate
 SDK, e.g. if there are two images are built (Dom0 and DomU), then both will be
 asked to populate corresponding SDKs.
 
+XT_PRODUCT_NAME - this shall be set to current product's name and can be
+used for better product related customizations. Note: this might not exist.
+
 XT-distro and bitbake related extensions
 ========================================
 
