@@ -145,13 +145,6 @@ do_collect_build_history() {
     ${REAL_XT_BB_RUN_CMD}
     HISTORY_DIR="${BUILDHISTORY_DIR}/${PN}"
     buildhistory-collect-srcrevs -a -p "${HISTORY_DIR}" > "${HISTORY_DIR}/build-versions.inc"
-    # if this is a repo-based build then save the exact manifest used
-    # with all the revisions set to used commit IDs
-    # we are running in the build directory, repo is one level up
-    cd ..
-    if [ -d ".repo" ]; then
-        repo manifest --output-file="${HISTORY_DIR}/domain.xml"
-    fi
 }
 
 do_populate_sstate_cache() {
