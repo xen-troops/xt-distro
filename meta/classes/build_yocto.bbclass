@@ -22,6 +22,7 @@ EXPANDED_XT_SSTATE_CACHE_MIRROR_DIR = "${@d.getVar('XT_SSTATE_CACHE_MIRROR_DIR')
 EXPANDED_XT_ALLOW_SSTATE_CACHE_MIRROR_USE = "${@d.getVar('XT_ALLOW_SSTATE_CACHE_MIRROR_USE') or ''}"
 EXPANDED_XT_POPULATE_SDK = "${@d.getVar('XT_POPULATE_SDK') or ''}"
 EXPANDED_XT_POPULATE_SSTATE_CACHE = "${@d.getVar('XT_POPULATE_SSTATE_CACHE') or ''}"
+EXPANDED_XT_RECONSTRUCT_DIR = "${@d.getVar('XT_RECONSTRUCT_DIR') or ''}"
 
 REAL_XT_BB_CONFIG_CMD = "${@d.getVar('XT_BB_CONFIG_CMD') or 'source poky/oe-init-build-env'}"
 REAL_XT_BB_RUN_CMD = "${@d.getVar('XT_BB_RUN_CMD') or 'source poky/oe-init-build-env'}"
@@ -80,6 +81,9 @@ build_yocto_configure() {
                         # force to what we want
                         echo "SSTATE_MIRRORS=\"file://.* file://${XT_SSTATE_CACHE_MIRROR_DIR}/PATH\"" >> "${local_conf}"
                 fi
+        fi
+        if [ -n "${EXPANDED_XT_RECONSTRUCT_DIR}" ] ; then
+                base_update_conf_value "${local_conf}" XT_RECONSTRUCT_DIR "${XT_RECONSTRUCT_DIR}/${PN}"
         fi
         base_add_conf_value "${local_conf}" INHERIT buildhistory
         base_update_conf_value "${local_conf}" BUILDHISTORY_COMMIT 1
