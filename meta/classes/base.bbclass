@@ -96,15 +96,15 @@ base_adjust_conf_value() {
 }
 
 base_set_conf_value() {
-   base_adjust_conf_value $1 $2 $3 "="
+   base_adjust_conf_value "$1" "$2" "$3" "="
 }
 
 base_add_conf_value() {
-    base_adjust_conf_value $1 $2 $3 "+="
+    base_adjust_conf_value "$1" "$2" "$3" "+="
 }
 
 base_remove_conf_value() {
-    base_adjust_conf_value $1 $2 $3 "-="
+    base_adjust_conf_value "$1" "$2" "$3" "-="
 }
 
 addtask fetch
