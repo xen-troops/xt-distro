@@ -72,6 +72,10 @@ def base_cpu_count():
     import multiprocessing
     return multiprocessing.cpu_count()
 
+def base_set_conf_value(conf_file, key, value, adjustment = " = "):
+    with open(conf_file, "a") as f:
+        f.write(key + adjustment + value + "\n")
+
 base_update_conf_value() {
     local config_file=$1
     local key=$2
