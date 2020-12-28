@@ -99,6 +99,10 @@ base_set_conf_value() {
    base_adjust_conf_value "$1" "$2" "$3" "="
 }
 
+base_set_weak_conf_value() {
+   base_adjust_conf_value "$1" "$2" "$3" "??="
+}
+
 base_add_conf_value() {
     base_adjust_conf_value "$1" "$2" "$3" "+="
 }
