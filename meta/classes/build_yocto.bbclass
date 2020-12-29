@@ -48,8 +48,10 @@ build_yocto_configure() {
                 # my-machine.conf. But, we cannot guarantee that our conf file
                 # will be picked by bitbake first.
                 # Add xen-troops suffix, so inner build uses
-                # our machine without races
-                base_update_conf_value "${local_conf}" MACHINE "${MACHINE}-xt"
+                # our machine without races.
+                # Pay attention that value will be set only if MACHINE is not set in local.conf.
+                # This is done to prioritize manual setting of MACHINE for domain.
+                base_set_if_absent_conf_value "${local_conf}" MACHINE "${MACHINE}-xt"
         fi
         if [ -n "${DL_DIR}" ] ; then
                 base_update_conf_value "${local_conf}" DL_DIR "${DL_DIR}"

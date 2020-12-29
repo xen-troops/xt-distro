@@ -86,6 +86,17 @@ base_update_conf_value() {
     sed -i "s%\(^${key} *[?+:]*= *\).*%\1\"${value}\"%" "${config_file}"
 }
 
+base_set_if_absent_conf_value() {
+    local config_file=$1
+    local key=$2
+    local value=$3
+    local exists=`grep "^[^\#]*${key}.*=" "${config_file}"`
+
+    if [ -z "${exists}" ] ; then
+        echo "${key} = ${value}" >> "${config_file}"
+    fi
+}
+
 base_adjust_conf_value() {
     local config_file=$1
     local key=$2
