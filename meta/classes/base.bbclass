@@ -3,6 +3,7 @@ CLASSOVERRIDE ?= "class-target"
 
 inherit patch
 inherit utility-tasks
+inherit logging
 
 OE_IMPORTS += "os sys time oe.path oe.types oe.utils"
 OE_IMPORTS[type] = "list"
