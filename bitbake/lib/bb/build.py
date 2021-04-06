@@ -80,8 +80,7 @@ class FuncFailed(Exception):
 
     def __str__(self):
         if self.logfile and os.path.exists(self.logfile):
-            msg = ("%s (log file is located at %s)" %
-                   (self.msg, self.logfile))
+            msg = open(self.logfile, 'r').read()
         else:
             msg = self.msg
         return msg
