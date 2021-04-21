@@ -49,6 +49,7 @@ class Repo(FetchMethod):
         ud.branch = ud.parm.get('branch', 'master')
         ud.manifest = ud.parm.get('manifest', 'default.xml')
         ud.groups = ud.parm.get('groups', '')
+        ud.depth = ud.parm.get('depth', '')
         if not ud.manifest.endswith('.xml'):
             ud.manifest += '.xml'
 
@@ -75,9 +76,14 @@ class Repo(FetchMethod):
         else:
             use_groups = ""
 
+        if ud.depth:
+            use_depth = "--depth=" + ud.depth
+        else:
+            use_depth = ""
+
         bb.utils.mkdirhier(ud.repodir)
         bb.fetch2.check_network_access(d, "repo init -m %s -b %s -u %s://%s%s%s" % (ud.manifest, ud.branch, ud.proto, username, ud.host, ud.path), ud.url)
-        runfetchcmd("repo init %s -m %s -b %s -u %s://%s%s%s" % (use_groups, ud.manifest, ud.branch, ud.proto, username, ud.host, ud.path), d, workdir=ud.repodir)
+        runfetchcmd("repo init %s %s -m %s -b %s -u %s://%s%s%s" % (use_depth, use_groups, ud.manifest, ud.branch, ud.proto, username, ud.host, ud.path), d, workdir=ud.repodir)
 
         bb.fetch2.check_network_access(d, "repo sync %s" % ud.url, ud.url)
         runfetchcmd("repo sync", d, workdir=ud.repodir)
