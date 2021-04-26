@@ -1398,9 +1398,9 @@ class FetchMethod(object):
 
         if unpack:
             if file.endswith('.tar'):
-                cmd = 'unpigz < %s | tar x --no-same-owner' % file
+                cmd = 'tar x --no-same-owner -f %s' % file
             elif file.endswith('.tgz') or file.endswith('.tar.gz') or file.endswith('.tar.Z'):
-                cmd = 'tar xz --no-same-owner -f %s' % file
+                cmd = 'unpigz < %s | tar x --no-same-owner' % file
             elif file.endswith('.tbz') or file.endswith('.tbz2') or file.endswith('.tar.bz2'):
                 cmd = 'bzip2 -dc %s | tar x --no-same-owner -f -' % file
             elif file.endswith('.gz') or file.endswith('.Z') or file.endswith('.z'):
