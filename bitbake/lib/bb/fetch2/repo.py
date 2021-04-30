@@ -50,19 +50,24 @@ class Repo(FetchMethod):
         ud.manifest = ud.parm.get('manifest', 'default.xml')
         ud.groups = ud.parm.get('groups', '')
         ud.depth = ud.parm.get('depth', '')
+        ud.directpath = ud.parm.get('directpath', '0')
         if not ud.manifest.endswith('.xml'):
             ud.manifest += '.xml'
 
         ud.localfile = d.expand("repo_%s%s_%s_%s.tar.gz" % (ud.host, ud.path.replace("/", "."), ud.manifest, ud.branch))
         repodir = d.getVar("REPODIR") or os.path.join(d.getVar("DL_DIR"), "repo")
-        gitsrcname = "%s%s" % (ud.host, ud.path.replace("/", "."))
-        ud.codir = os.path.join(repodir, gitsrcname, ud.manifest)
-        ud.repodir = os.path.join(ud.codir, "repo")
+        if ud.directpath == "1":
+            ud.repodir = repodir
+        else:
+            gitsrcname = "%s%s" % (ud.host, ud.path.replace("/", "."))
+            ud.codir = os.path.join(repodir, gitsrcname, ud.manifest)
+            ud.repodir = os.path.join(ud.codir, "repo")
 
     def download(self, ud, d):
         """Fetch url"""
 
-        if os.access(os.path.join(d.getVar("DL_DIR"), ud.localfile), os.R_OK):
+        # For performance reasons we do not use tar.gz if 'directpath' is specified in SRC_URI
+        if ud.directpath != "1" and os.access(os.path.join(d.getVar("DL_DIR"), ud.localfile), os.R_OK):
             logger.debug(1, "%s already exists (or was stashed). Skipping repo init / sync.", ud.localpath)
             return
 
@@ -88,14 +93,13 @@ class Repo(FetchMethod):
         bb.fetch2.check_network_access(d, "repo sync %s" % ud.url, ud.url)
         runfetchcmd("repo sync", d, workdir=ud.repodir)
 
-        scmdata = ud.parm.get("scmdata", "")
-        if scmdata == "keep":
-            tar_flags = ""
-        else:
-            tar_flags = "--exclude='.repo' --exclude='.git'"
-
-        # Create a cache
-        runfetchcmd("tar %s -cf - %s | pigz > %s" % (tar_flags, os.path.join(".", "*"), ud.localpath), d, workdir=ud.codir)
+        if ud.directpath != "1":
+            scmdata = ud.parm.get("scmdata", "")
+            if scmdata == "keep":
+                tar_flags = ""
+            else:
+                tar_flags = "--exclude='.repo' --exclude='.git'"
+            runfetchcmd("tar %s -cf - %s | pigz > %s" % (tar_flags, os.path.join(".", "*"), ud.localpath), d, workdir=ud.codir)
 
     def unpack(self, ud, destdir, d):
         FetchMethod.unpack(self, ud, destdir, d)
