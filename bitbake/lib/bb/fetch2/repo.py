@@ -63,6 +63,14 @@ class Repo(FetchMethod):
             ud.codir = os.path.join(repodir, gitsrcname, ud.manifest)
             ud.repodir = os.path.join(ud.codir, "repo")
 
+    def sync(self, destdir, d):
+        # repo can separate the "network" sync (the git fetch part, network bound)
+        # from the "local" sync (the git rebase part, compute & i/o bound).
+        num_jobs = d.getVar("BB_NUMBER_THREADS", True) or "1"
+        runfetchcmd("repo sync -c -n -j%s" % num_jobs, d, workdir=destdir)
+        runfetchcmd("repo sync -c -l -j%s" % num_jobs, d, workdir=destdir)
+
+
     def download(self, ud, d):
         """Fetch url"""
 
@@ -91,7 +99,7 @@ class Repo(FetchMethod):
         runfetchcmd("repo init %s %s -m %s -b %s -u %s://%s%s%s" % (use_depth, use_groups, ud.manifest, ud.branch, ud.proto, username, ud.host, ud.path), d, workdir=ud.repodir)
 
         bb.fetch2.check_network_access(d, "repo sync %s" % ud.url, ud.url)
-        runfetchcmd("repo sync", d, workdir=ud.repodir)
+        self.sync(ud.repodir, d)
 
         if ud.directpath != "1":
             scmdata = ud.parm.get("scmdata", "")
@@ -104,7 +112,7 @@ class Repo(FetchMethod):
     def unpack(self, ud, destdir, d):
         FetchMethod.unpack(self, ud, destdir, d)
         bb.fetch2.check_network_access(d, "repo sync %s" % ud.url, ud.url)
-        runfetchcmd("repo sync", d, workdir=ud.repodir)
+        self.sync(os.path.join(destdir, "repo"), d)
 
     def supports_srcrev(self):
         return False
